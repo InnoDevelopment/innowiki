@@ -1,5 +1,9 @@
 version: '2'
 
+volumes:
+  wiki-data:
+    external: true
+
 services:
   wiki:
     image: ratijas/moinmoin
@@ -7,6 +11,8 @@ services:
     command: -t Europe/Moscow
     env_file:
       - wiki.env
+    volumes:
+      - "wiki-data:/usr/local/share/moin/data"
 
   nginx:
     image: nginx
