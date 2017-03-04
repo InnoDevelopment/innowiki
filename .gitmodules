@@ -1,0 +1,3 @@
+[submodule "moinmoin-memodump"]
+	path = moinmoin-memodump
+	url = ./moinmoin-memodump
