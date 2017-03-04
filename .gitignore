@@ -1,5 +1,7 @@
 # dotenv file with site-local settings
 *.env
+/ssl/*
+!/ssl/README
 
 # PyCharm's Ignore File Generator
 # Byte-compiled / optimized / DLL files
