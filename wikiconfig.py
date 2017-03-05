@@ -145,21 +145,14 @@ class Config(multiconfig.DefaultConfig):
 
     # Language options --------------------------------------------------
 
-    # See http://moinmo.in/ConfigMarket for configuration in
-    # YOUR language that other people contributed.
 
     # The main wiki language, set the direction of the wiki pages
-    language_default = 'en'
+    language_default = 'ru'
 
-    # the following regexes should match the complete name when used in free text
-    # the group 'all' shall match all, while the group 'key' shall match the key only
-    # e.g. CategoryFoo -> group 'all' ==  CategoryFoo, group 'key' == Foo
-    # moin's code will add ^ / $ at beginning / end when needed
-    # You must use Unicode strings here [Unicode]
-    page_category_regex = ur'(?P<all>Category(?P<key>(?!Template)\S+))'
-    page_dict_regex = ur'(?P<all>(?P<key>\S+)Dict)'
-    page_group_regex = ur'(?P<all>(?P<key>\S+)Group)'
-    page_template_regex = ur'(?P<all>(?P<key>\S+)Template)'
+    page_category_regex = ur'(?P<all>(Категория|Category)(?P<key>\S+))'
+    page_dict_regex     = ur'(?P<all>(?P<key>\S+)(Словарь|Dict))'
+    page_group_regex    = ur'(?P<all>((?!.*Group)(?P<ru>Группа))?(?P<key>\S+)(?(ru)|Group))'
+    page_template_regex = ur'(?P<all>((?!.*Template)(?P<ru>Шаблон))?(?P<key>\S+)(?(ru)|Template))'
 
     # Content options ---------------------------------------------------
 
