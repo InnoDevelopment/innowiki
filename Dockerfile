@@ -3,6 +3,7 @@ FROM dperson/moinmoin
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
+      ca-certificates \
       python-ldap \
       && \
     apt-get clean && rm -rf /var/lib/apt/lists/*

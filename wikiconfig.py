@@ -212,9 +212,9 @@ class Config(multiconfig.DefaultConfig):
         email_callback=None, # callback function called to make up email address
         coding='utf-8', # coding used for ldap queries and result values
         timeout=10, # how long we wait for the ldap server [s]
-        start_tls=0, # usage of Transport Layer Security 0 = No, 1 = Try, 2 = Required
+        start_tls=2, # usage of Transport Layer Security 0 = No, 1 = Try, 2 = Required
         tls_cacertdir=None,
-        tls_cacertfile=None,
+        tls_cacertfile='/etc/ssl/certs/ca-certificates.crt',
         tls_certfile=None,
         tls_keyfile=None,
         tls_require_cert=0, # 0 == ldap.OPT_X_TLS_NEVER (needed for self-signed certs)
