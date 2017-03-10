@@ -8,9 +8,10 @@ RUN apt-get update && \
       && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ADD ./wikiconfig.py /usr/local/share/moin/wikiconfig.py
+COPY ./moinmoin-memodump/memodump.py /usr/local/share/moin/data/plugin/theme
+COPY ./moinmoin-memodump/memodump    /usr/local/lib/python2.7/dist-packages/MoinMoin/web/static/htdocs/memodump
 
-ADD ./moinmoin-memodump/memodump.py /usr/local/share/moin/data/plugin/theme
-ADD ./moinmoin-memodump/memodump    /usr/local/lib/python2.7/dist-packages/MoinMoin/web/static/htdocs/memodump
+COPY ./wikiconfig.py /usr/local/share/moin/wikiconfig.py
+COPY ./img/logo.png /usr/local/lib/python2.7/dist-packages/MoinMoin/web/static/htdocs/common/
 
 VOLUME ["/usr/local/share/moin/data"]

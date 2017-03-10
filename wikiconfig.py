@@ -70,7 +70,7 @@ class Config(multiconfig.DefaultConfig):
     # Wiki logo. You can use an image, text or both. [Unicode]
     # For no logo or text, use '' - the default is to show the sitename.
     # See also url_prefix setting below!
-    #logo_string = u'<img src="%s/common/docker.png" alt="Logo">' % url_prefix_static
+    logo_string = u'<img src="%s/common/logo.png" alt="Logo">' % url_prefix_static
 
     # name of entry page / front page [Unicode], choose one of those:
 
