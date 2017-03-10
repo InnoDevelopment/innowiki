@@ -171,7 +171,7 @@ class Config(multiconfig.DefaultConfig):
     ldap_authenticator1 = LDAPAuth(
         # the values shown below are the DEFAULT values (you may remove them if you are happy with them),
         # the examples shown in the comments are typical for Active Directory (AD) or OpenLDAP.
-        server_uri='ldap://edu.innopolis.ru',
+        server_uri=os.environ.get('LDAP_URI'),
             # ldap / active directory server URI
             # use ldaps://server:636 url for ldaps,
             # use  ldap://server for ldap without tls (and set start_tls to 0),
