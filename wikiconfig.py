@@ -91,12 +91,16 @@ class Config(multiconfig.DefaultConfig):
 
     # This is checked by some rather critical and potentially harmful actions,
     # like despam or PackageInstaller action:
-    superuser = [u"mmAdmin", ]
+    superuser = [u"i.tkachenko", u"m.skoriukov"]
 
     # IMPORTANT: grant yourself admin rights! replace YourName with
     # your user name. See HelpOnAccessControlLists for more help.
     # All acl_rights_xxx options must use unicode [Unicode]
-    #acl_rights_before = u"YourName:read,write,delete,revert,admin"
+    acl_rights_default = u"+AdminGroup:delete,revert Known:read,write All:"
+    acl_rights_before = u"i.tkachenko,m.skoriukov:read,write,delete,revert,admin"
+    acl_hierarchic = True
+    acl_rights_valid = ["read", "write", "delete", "revert", "admin"]
+
 
     # The default (ENABLED) password_checker will keep users from choosing too
     # short or too easy passwords. If you don't like this and your site has
