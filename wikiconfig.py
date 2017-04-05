@@ -112,6 +112,7 @@ class EitherAuth(BaseAuth):
         import MoinMoin
         from MoinMoin import log
         self.logger = log.getLogger('%s.either' % MoinMoin.auth.__name__)
+        self.logger.debug("EitherAuth %s logout possible: %s" % (self.name, self.logout_possible))
 
     def login(self, request, user_obj, **kw):
         self.logger.debug("trying to login user %s with either %s or %s" % (user_obj, self.first.name, self.second.name))
@@ -123,6 +124,7 @@ class EitherAuth(BaseAuth):
             if isinstance(retval, ContinueLogin) and retval.user_obj is not None:
                 self.logger.debug("successfully logged in: %s" % retval.user_obj)
                 self.__methods[retval.user_obj.email] = method
+                self.logger.debug("methods mapping: %s" % self.__methods)
                 return retval
 
         self.logger.debug("no auth method could be applied")
@@ -130,13 +132,8 @@ class EitherAuth(BaseAuth):
 
     def request(self, request, user_obj, **kw):
         self.logger.debug("auth request from user %s" % user_obj)
-        method = self.__methods.get(getattr(user_obj, 'email', None), None)
-        if method is not None:
-            self.logger.debug("forwarding request to the method %s" % method.name)
-            return method.request(request, user_obj, **kw)
-        else:
-            self.logger.debug("trying first method %s" % self.first.name)
-            return self.first.request(request, user_obj, **kw)
+        retval = self.login(request, user_obj, **kw)
+        return retval.user_obj, retval.continue_flag
 
     def logout(self, request, user_obj, **kw):
         self.logger.debug("logout user %s" % user_obj)
