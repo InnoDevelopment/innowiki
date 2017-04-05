@@ -13,6 +13,7 @@ services:
       - wiki.env
     volumes:
       - "wiki-data:/usr/local/share/moin/data"
+      - "/etc/hosts:/etc/hosts:ro"
 
   nginx:
     image: nginx
