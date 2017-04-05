@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 # IMPORTANT! This encoding (charset) setting MUST be correct! If you live in a
 # western country and you don't know that you use utf-8, you probably want to
 # use iso-8859-1 (or some other iso charset). If you use utf-8 (a Unicode
@@ -153,10 +153,10 @@ class Config(multiconfig.DefaultConfig):
     # The main wiki language, set the direction of the wiki pages
     language_default = 'ru'
 
-    page_category_regex = ur'(?P<all>(Категория|Category)(?P<key>\S+))'
-    page_dict_regex     = ur'(?P<all>(?P<key>\S+)(Словарь|Dict))'
-    page_group_regex    = ur'(?P<all>((?!.*Group)(?P<ru>Группа))?(?P<key>\S+)(?(ru)|Group))'
-    page_template_regex = ur'(?P<all>((?!.*Template)(?P<ru>Шаблон))?(?P<key>\S+)(?(ru)|Template))'
+    page_category_regex = r'(?P<all>(Категория|Category)(?P<key>\S+))'
+    page_dict_regex     = r'(?P<all>(?P<key>\S+)(Словарь|Dict))'
+    page_group_regex    = r'(?P<all>((?!.*Group)(?P<ru>Группа))?(?P<key>\S+)(?(ru)|Group))'
+    page_template_regex = r'(?P<all>((?!.*Template)(?P<ru>Шаблон))?(?P<key>\S+)(?(ru)|Template))'
 
     # Content options ---------------------------------------------------
 
