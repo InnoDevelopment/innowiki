@@ -172,7 +172,7 @@ class Config(multiconfig.DefaultConfig):
     # See HelpOnAuthentication and HelpOnConfiguration for more infos.
 
     from MoinMoin.auth.ldap_login import LDAPAuth
-    ldap_authenticator1 = LDAPAuth(
+    ldap_authenticator_edu = LDAPAuth(
         # the values shown below are the DEFAULT values (you may remove them if you are happy with them),
         # the examples shown in the comments are typical for Active Directory (AD) or OpenLDAP.
         server_uri=os.environ.get('LDAP_URI'),
@@ -224,12 +224,16 @@ class Config(multiconfig.DefaultConfig):
         tls_require_cert=0, # 0 == ldap.OPT_X_TLS_NEVER (needed for self-signed certs)
         bind_once=False, # set to True to only do one bind - useful if configured to bind as the user on the first attempt
         autocreate=True, # set to True to automatically create/update user profiles
-        name='ldap', # use e.g. 'ldap_pdc' and 'ldap_bdc' (or 'ldap1' and 'ldap2') if you auth against 2 ldap servers
+        name='ldap_edu', # use e.g. 'ldap_pdc' and 'ldap_bdc' (or 'ldap1' and 'ldap2') if you auth against 2 ldap servers
         report_invalid_credentials=True, # whether to emit "invalid username or password" msg at login time or not
     )
 
-    auth = [ldap_authenticator1, ] # this is a list, you may have multiple ldap authenticators
-                                   # as well as other authenticators
+    auth = [
+        ldap_authenticator_edu,
+        # ldap_authenticator_uni,
+    ]
+    # this is a list, you may have multiple ldap authenticators
+    # as well as other authenticators
 
     cookie_lifetime = (0, 1) # no anon user sessions, 1h session lifetime for logged-in users
 
