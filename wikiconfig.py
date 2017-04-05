@@ -27,13 +27,26 @@
 
 import os
 
-from MoinMoin.auth import BaseAuth, ContinueLogin
+from MoinMoin.auth import CancelLogin, ContinueLogin
+from MoinMoin.auth.ldap_login import LDAPAuth
 from MoinMoin.config import multiconfig, url_prefix_static
 
 
+class LDAPWrapper(LDAPAuth):
+    def login(self, request, user_obj, **kw):
+        result = LDAPAuth.login(self, request, user_obj, **kw)
+        if isinstance(result, CancelLogin):
+            return ContinueLogin(user_obj)
+        elif isinstance(result, ContinueLogin):
+            if result.user_obj is user_obj:
+                return ContinueLogin(user_obj)
+            else:
+                result.continue_flag = False
+                return result
+
+
 def ldap(server_uri, dc, name):
-    from MoinMoin.auth.ldap_login import LDAPAuth
-    return LDAPAuth(
+    return LDAPWrapper(
         # the values shown below are the DEFAULT values (you may remove them if you are happy with them),
         # the examples shown in the comments are typical for Active Directory (AD) or OpenLDAP.
         server_uri=server_uri,
@@ -89,62 +102,6 @@ def ldap(server_uri, dc, name):
         name=name,  # use e.g. 'ldap_pdc' and 'ldap_bdc' (or 'ldap1' and 'ldap2') if you auth against 2 ldap servers
         report_invalid_credentials=True,  # whether to emit "invalid username or password" msg at login time or not
     )
-
-
-
-class EitherAuth(BaseAuth):
-
-    def __init__(self, first, second):
-        BaseAuth.__init__(self)
-
-        assert isinstance(first, BaseAuth)
-        assert isinstance(second, BaseAuth)
-
-        self.first = first
-        self.second = second
-        self.__methods = {None: None}
-        """ Dict[User.email: AuthMethod] """
-
-        self.name = 'either_{}_or_{}'.format(self.first.name, self.second.name)
-        self.login_inputs = self.first.login_inputs
-        self.logout_possible = self.first.logout_possible
-
-        import MoinMoin
-        from MoinMoin import log
-        self.logger = log.getLogger('%s.either' % MoinMoin.auth.__name__)
-        self.logger.debug("EitherAuth %s logout possible: %s" % (self.name, self.logout_possible))
-
-    def login(self, request, user_obj, **kw):
-        self.logger.debug("trying to login user %s with either %s or %s" % (user_obj, self.first.name, self.second.name))
-
-        for method in (self.first, self.second):
-            self.logger.debug("trying method '%s'" % method.name)
-            retval = method.login(request, user_obj, **kw)
-
-            if isinstance(retval, ContinueLogin) and retval.user_obj is not None:
-                self.logger.debug("successfully logged in: %s" % retval.user_obj)
-                self.__methods[retval.user_obj.email] = method
-                self.logger.debug("methods mapping: %s" % self.__methods)
-                return retval
-
-        self.logger.debug("no auth method could be applied")
-        return BaseAuth.login(self, request, user_obj, **kw)
-
-    def request(self, request, user_obj, **kw):
-        self.logger.debug("auth request from user %s" % user_obj)
-        retval = self.login(request, user_obj, **kw)
-        return retval.user_obj, retval.continue_flag
-
-    def logout(self, request, user_obj, **kw):
-        self.logger.debug("logout user %s" % user_obj)
-        email = getattr(user_obj, 'email', None)
-        if email is not None:
-            method = self.__methods.pop(email, None)
-            if method is not None:
-                self.logger.debug("found method %s" % method.name)
-                return method.logout(self, request, user_obj, **kw)
-        self.logger.debug("falling back to superclass call")
-        return BaseAuth.logout(self, request, user_obj, **kw)
 
 
 class Config(multiconfig.DefaultConfig):
@@ -292,10 +249,8 @@ class Config(multiconfig.DefaultConfig):
 
     auth = [
         AuthLog(),
-        EitherAuth(
-            ldap('ldaps://edu.innopolis.ru:636', 'edu', 'ldap_edu'),
-            ldap('ldaps://uni.innopolis.ru:636', 'uni', 'ldap_uni'),
-        )
+        ldap('ldaps://edu.innopolis.ru:636', 'edu', 'ldap_edu'),
+        ldap('ldaps://uni.innopolis.ru:636', 'uni', 'ldap_uni'),
     ]
     # this is a list, you may have multiple ldap authenticators
     # as well as other authenticators
