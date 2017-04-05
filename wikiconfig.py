@@ -135,8 +135,8 @@ class EitherAuth(BaseAuth):
             self.logger.debug("forwarding request to the method %s" % method.name)
             return method.request(request, user_obj, **kw)
         else:
-            self.logger.debug("forwarding to superclass")
-            return BaseAuth.request(self, request, user_obj, **kw)
+            self.logger.debug("trying first method %s" % self.first.name)
+            return self.first.request(request, user_obj, **kw)
 
     def logout(self, request, user_obj, **kw):
         self.logger.debug("logout user %s" % user_obj)
