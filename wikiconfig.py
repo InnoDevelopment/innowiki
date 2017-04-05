@@ -93,14 +93,17 @@ def ldap(server_uri, dc, name):
 
 
 class EitherAuth(BaseAuth):
-    name = None
-    login_inputs = []
-    logout_possible = False
 
     def __init__(self, first, second):
         BaseAuth.__init__(self)
+
+        assert isinstance(first, BaseAuth)
+        assert isinstance(second, BaseAuth)
+
         self.first = first
         self.second = second
+        self.__methods = {None: None}
+        """ Dict[User.email: AuthMethod] """
 
         self.name = 'either_{}_or_{}'.format(self.first.name, self.second.name)
         self.login_inputs = self.first.login_inputs
@@ -111,10 +114,26 @@ class EitherAuth(BaseAuth):
         for method in (self.first, self.second):
             retval = method.login(request, user_obj, **kw)
 
-            if isinstance(retval, ContinueLogin):
+            if isinstance(retval, ContinueLogin) and retval.user_obj is not None:
+                self.__methods[retval.user_obj.email] = method
                 return retval
 
         return BaseAuth.login(self, request, user_obj, **kw)
+
+    def request(self, request, user_obj, **kw):
+        method = self.__methods.get(getattr(user_obj, 'email', None), None)
+        if method is not None:
+            return method.request(request, user_obj, **kw)
+        else:
+            return BaseAuth.request(self, request, user_obj, **kw)
+
+    def logout(self, request, user_obj, **kw):
+        email = getattr(user_obj, 'email', None)
+        if email is not None:
+            method = self.__methods.pop(email, None)
+            if method is not None:
+                return method.logout(self, request, user_obj, **kw)
+        return BaseAuth.logout(self, request, user_obj, **kw)
 
 
 class Config(multiconfig.DefaultConfig):
