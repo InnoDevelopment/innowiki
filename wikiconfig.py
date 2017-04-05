@@ -93,10 +93,18 @@ def ldap(server_uri, dc, name):
 
 
 class EitherAuth(BaseAuth):
+    name = None
+    login_inputs = []
+    logout_possible = False
+
     def __init__(self, first, second):
         BaseAuth.__init__(self)
         self.first = first
         self.second = second
+
+        self.name = 'either_{}_or_{}'.format(self.first.name, self.second.name)
+        self.login_inputs = self.first.login_inputs
+        self.logout_possible = self.first.logout_possible
 
     def login(self, request, user_obj, **kw):
 
