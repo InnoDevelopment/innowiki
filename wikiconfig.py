@@ -30,7 +30,7 @@ import os
 from MoinMoin.config import multiconfig, url_prefix_static
 
 
-def ldap(server_uri, base_dn, name):
+def ldap(server_uri, dc, name):
     from MoinMoin.auth.ldap_login import LDAPAuth
     return LDAPAuth(
         # the values shown below are the DEFAULT values (you may remove them if you are happy with them),
@@ -40,7 +40,7 @@ def ldap(server_uri, base_dn, name):
         # use ldaps://server:636 url for ldaps,
         # use  ldap://server for ldap without tls (and set start_tls to 0),
         # use  ldap://server for ldap with tls (and set start_tls to 1 or 2).
-        bind_dn='%(username)s@uni',
+        bind_dn='%%(username)s@%s' % dc,
         # We can either use some fixed user and password for binding to LDAP.
         # Be careful if you need a % char in those strings - as they are used as
         # a format string, you have to write %% to get a single % in the end.
@@ -53,7 +53,7 @@ def ldap(server_uri, base_dn, name):
         # or we can bind anonymously (if that is supported by your directory).
         # In any case, bind_dn and bind_pw must be defined.
         bind_pw='%(password)s',
-        base_dn=base_dn,
+        base_dn='dc=%s,dc=innopolis,dc=ru' % dc,
         # base DN we use for searching
         # base_dn = 'ou=SOMEUNIT,dc=example,dc=org'
         # base_dn = 'uid=%(username)s,ou=people,dc=company,dc=com'
@@ -235,8 +235,8 @@ class Config(multiconfig.DefaultConfig):
 
     auth = [
         AuthLog(),
-        ldap('ldaps://edu.innopolis.ru:636', 'dc=edu,dc=innopolis,dc=ru', 'ldap_edu'),
-        ldap('ldaps://uni.innopolis.ru:636', 'dc=uni,dc=innopolis,dc=ru', 'ldap_uni'),
+        ldap('ldaps://edu.innopolis.ru:636', 'edu', 'ldap_edu'),
+        ldap('ldaps://uni.innopolis.ru:636', 'uni', 'ldap_uni'),
     ]
     # this is a list, you may have multiple ldap authenticators
     # as well as other authenticators
