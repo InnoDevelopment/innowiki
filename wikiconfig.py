@@ -241,3 +241,5 @@ class Config(multiconfig.DefaultConfig):
     # you maybe want to use user_checkbox_remove, user_checkbox_defaults, user_form_defaults,
     # user_form_disable, user_form_remove.
 
+    from MoinMoin import log
+    log.load_config('/usr/local/share/moin/config/logging/logfile_debug_auth')
