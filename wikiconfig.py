@@ -172,7 +172,7 @@ class Config(multiconfig.DefaultConfig):
     # See HelpOnAuthentication and HelpOnConfiguration for more infos.
 
     from MoinMoin.auth.ldap_login import LDAPAuth
-    ldap_authenticator_edu = LDAPAuth(
+    ldap_authenticator_uni = LDAPAuth(
         # the values shown below are the DEFAULT values (you may remove them if you are happy with them),
         # the examples shown in the comments are typical for Active Directory (AD) or OpenLDAP.
         server_uri='ldaps://uni.innopolis.ru:636',
@@ -193,14 +193,14 @@ class Config(multiconfig.DefaultConfig):
             # or we can bind anonymously (if that is supported by your directory).
             # In any case, bind_dn and bind_pw must be defined.
         bind_pw='%(password)s',
-        base_dn='',
+        base_dn='dc=uni,dc=innopolis,dc=ru',
             # base DN we use for searching
             #base_dn = 'ou=SOMEUNIT,dc=example,dc=org'
             #base_dn = 'uid=%(username)s,ou=people,dc=company,dc=com'
 
         scope=2, # scope of the search we do (2 == ldap.SCOPE_SUBTREE)
         referrals=0, # LDAP REFERRALS (0 needed for AD)
-        search_filter='(sAMAccountName=%(username)s)',
+        search_filter='(samaccountname=%(username)s)',
             # ldap filter used for searching:
             #search_filter = '(sAMAccountName=%(username)s)' # (AD)
             #search_filter = '(uid=%(username)s)' # (OpenLDAP)
@@ -222,7 +222,7 @@ class Config(multiconfig.DefaultConfig):
         tls_certfile=None,
         tls_keyfile=None,
         tls_require_cert=0, # 0 == ldap.OPT_X_TLS_NEVER (needed for self-signed certs)
-        bind_once=False, # set to True to only do one bind - useful if configured to bind as the user on the first attempt
+        bind_once=True, # set to True to only do one bind - useful if configured to bind as the user on the first attempt
         autocreate=True, # set to True to automatically create/update user profiles
         name='ldap_edu', # use e.g. 'ldap_pdc' and 'ldap_bdc' (or 'ldap1' and 'ldap2') if you auth against 2 ldap servers
         report_invalid_credentials=True, # whether to emit "invalid username or password" msg at login time or not
@@ -232,8 +232,8 @@ class Config(multiconfig.DefaultConfig):
 
     auth = [
         AuthLog(),
-        ldap_authenticator_edu,
-        # ldap_authenticator_uni,
+        # ldap_authenticator_edu,
+        ldap_authenticator_uni,
     ]
     # this is a list, you may have multiple ldap authenticators
     # as well as other authenticators
