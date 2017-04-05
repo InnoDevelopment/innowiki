@@ -109,30 +109,44 @@ class EitherAuth(BaseAuth):
         self.login_inputs = self.first.login_inputs
         self.logout_possible = self.first.logout_possible
 
+        import MoinMoin
+        from MoinMoin import log
+        self.logger = log.getLogger('%s.either' % MoinMoin.auth.__name__)
+
     def login(self, request, user_obj, **kw):
+        self.logger.debug("trying to login user %s with either %s or %s" % (user_obj, self.first.name, self.second.name))
 
         for method in (self.first, self.second):
+            self.logger.debug("trying method '%s'" % method.name)
             retval = method.login(request, user_obj, **kw)
 
             if isinstance(retval, ContinueLogin) and retval.user_obj is not None:
+                self.logger.debug("successfully logged in: %s" % retval.user_obj)
                 self.__methods[retval.user_obj.email] = method
                 return retval
 
+        self.logger.debug("no auth method could be applied")
         return BaseAuth.login(self, request, user_obj, **kw)
 
     def request(self, request, user_obj, **kw):
+        self.logger.debug("auth request from user %s" % user_obj)
         method = self.__methods.get(getattr(user_obj, 'email', None), None)
         if method is not None:
+            self.logger.debug("forwarding request to the method %s" % method.name)
             return method.request(request, user_obj, **kw)
         else:
+            self.logger.debug("forwarding to superclass")
             return BaseAuth.request(self, request, user_obj, **kw)
 
     def logout(self, request, user_obj, **kw):
+        self.logger.debug("logout user %s" % user_obj)
         email = getattr(user_obj, 'email', None)
         if email is not None:
             method = self.__methods.pop(email, None)
             if method is not None:
+                self.logger.debug("found method %s" % method.name)
                 return method.logout(self, request, user_obj, **kw)
+        self.logger.debug("falling back to superclass call")
         return BaseAuth.logout(self, request, user_obj, **kw)
 
 
