@@ -175,12 +175,12 @@ class Config(multiconfig.DefaultConfig):
     ldap_authenticator_edu = LDAPAuth(
         # the values shown below are the DEFAULT values (you may remove them if you are happy with them),
         # the examples shown in the comments are typical for Active Directory (AD) or OpenLDAP.
-        server_uri=os.environ.get('LDAP_URI'),
+        server_uri='ldaps://uni.innopolis.ru:636',
             # ldap / active directory server URI
             # use ldaps://server:636 url for ldaps,
             # use  ldap://server for ldap without tls (and set start_tls to 0),
             # use  ldap://server for ldap with tls (and set start_tls to 1 or 2).
-        bind_dn=os.environ.get('BIND_DN'),
+        bind_dn='%(username)s@uni',
             # We can either use some fixed user and password for binding to LDAP.
             # Be careful if you need a % char in those strings - as they are used as
             # a format string, you have to write %% to get a single % in the end.
@@ -192,8 +192,8 @@ class Config(multiconfig.DefaultConfig):
             #bind_pw = '%(password)s' # password we use for first bind
             # or we can bind anonymously (if that is supported by your directory).
             # In any case, bind_dn and bind_pw must be defined.
-        bind_pw=os.environ.get('BIND_PW'),
-        base_dn='DC=edu,DC=innopolis,DC=ru',
+        bind_pw='%(password)s',
+        base_dn='',
             # base DN we use for searching
             #base_dn = 'ou=SOMEUNIT,dc=example,dc=org'
             #base_dn = 'uid=%(username)s,ou=people,dc=company,dc=com'
