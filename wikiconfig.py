@@ -27,6 +27,7 @@
 
 import os
 
+from MoinMoin.auth import BaseAuth, ContinueLogin
 from MoinMoin.config import multiconfig, url_prefix_static
 
 
@@ -88,6 +89,24 @@ def ldap(server_uri, dc, name):
         name=name,  # use e.g. 'ldap_pdc' and 'ldap_bdc' (or 'ldap1' and 'ldap2') if you auth against 2 ldap servers
         report_invalid_credentials=True,  # whether to emit "invalid username or password" msg at login time or not
     )
+
+
+
+class EitherAuth(BaseAuth):
+    def __init__(self, first, second):
+        BaseAuth.__init__(self)
+        self.first = first
+        self.second = second
+
+    def login(self, request, user_obj, **kw):
+
+        for method in (self.first, self.second):
+            retval = method.login(request, user_obj, **kw)
+
+            if isinstance(retval, ContinueLogin):
+                return retval
+
+        return BaseAuth.login(self, request, user_obj, **kw)
 
 
 class Config(multiconfig.DefaultConfig):
@@ -235,8 +254,10 @@ class Config(multiconfig.DefaultConfig):
 
     auth = [
         AuthLog(),
-        ldap('ldaps://edu.innopolis.ru:636', 'edu', 'ldap_edu'),
-        ldap('ldaps://uni.innopolis.ru:636', 'uni', 'ldap_uni'),
+        EitherAuth(
+            ldap('ldaps://edu.innopolis.ru:636', 'edu', 'ldap_edu'),
+            ldap('ldaps://uni.innopolis.ru:636', 'uni', 'ldap_uni'),
+        )
     ]
     # this is a list, you may have multiple ldap authenticators
     # as well as other authenticators
