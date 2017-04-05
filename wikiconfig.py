@@ -228,7 +228,10 @@ class Config(multiconfig.DefaultConfig):
         report_invalid_credentials=True, # whether to emit "invalid username or password" msg at login time or not
     )
 
+    from MoinMoin.auth.log import AuthLog
+
     auth = [
+        AuthLog(),
         ldap_authenticator_edu,
         # ldap_authenticator_uni,
     ]
